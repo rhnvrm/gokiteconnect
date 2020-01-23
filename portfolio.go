@@ -1,6 +1,7 @@
 package kiteconnect
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -31,8 +32,23 @@ type Holding struct {
 	DayChangePercentage float64 `json:"day_change_percentage"`
 }
 
+func (h Holding) String() string {
+	return fmt.Sprintf(
+		"Tradingsymbol: %v\nExchange: %v\nInstrumentToken: %v\nISIN: %v\nProduct: %v\nPrice: %v\nQuantity: %v\nT1Quantity: %v\nRealisedQuantity: %v\nCollateralQuantity: %v\nCollateralType: %v\nAveragePrice: %v\nLastPrice: %v\nClosePrice: %v\nPnL: %v\nDayChange: %v\nDayChangePercentage: %v\n",
+		h.Tradingsymbol, h.Exchange, h.InstrumentToken, h.ISIN, h.Product, h.Price, h.Quantity, h.T1Quantity, h.RealisedQuantity, h.CollateralQuantity, h.CollateralType, h.AveragePrice, h.LastPrice, h.ClosePrice, h.PnL, h.DayChange, h.DayChangePercentage,
+	)
+}
+
 // Holdings is a list of holdings
 type Holdings []Holding
+
+func (h Holdings) String() string {
+	var w = bytes.NewBufferString("")
+	for _, holding := range h {
+		fmt.Fprintf(w, "%v\n", holding)
+	}
+	return w.String()
+}
 
 // Position represents an individual position response.
 type Position struct {
@@ -73,10 +89,30 @@ type Position struct {
 	DaySellValue    float64 `json:"day_sell_value"`
 }
 
+func (p Position) String() string {
+	return fmt.Sprintf(
+		"Tradingsymbol:%v\nExchange:%v\nInstrumentToken:%v\nProduct:%v\nQuantity:%v\nOvernightQuantity:%v\nMultiplier:%v\nAveragePrice:%v\nClosePrice:%v\nLastPrice:%v\nValue:%v\nPnL:%v\nM2M:%v\nUnrealised:%v\nRealised:%v\nBuyQuantity:%v\nBuyPrice:%v\nBuyValue:%v\nBuyM2MValue:%v\nSellQuantity:%v\nSellPrice:%v\nSellValue:%v\nSellM2MValue:%v\nDayBuyQuantity:%v\nDayBuyPrice:%v\nDayBuyValue:%v\nDaySellQuantity:%v\nDaySellPrice:%v\nDaySellValue:%v\n",
+		p.Tradingsymbol, p.Exchange, p.InstrumentToken, p.Product, p.Quantity, p.OvernightQuantity, p.Multiplier, p.AveragePrice, p.ClosePrice, p.LastPrice, p.Value, p.PnL, p.M2M, p.Unrealised, p.Realised, p.BuyQuantity, p.BuyPrice, p.BuyValue, p.BuyM2MValue, p.SellQuantity, p.SellPrice, p.SellValue, p.SellM2MValue, p.DayBuyQuantity, p.DayBuyPrice, p.DayBuyValue, p.DaySellQuantity, p.DaySellPrice, p.DaySellValue,
+	)
+}
+
 // Positions represents a list of net and day positions.
 type Positions struct {
 	Net []Position `json:"net"`
 	Day []Position `json:"day"`
+}
+
+func (p Positions) String() string {
+	var w = bytes.NewBufferString("")
+	fmt.Fprintf(w, "Net:\n")
+	for _, position := range p.Net {
+		fmt.Fprintf(w, "%v\n", position)
+	}
+	fmt.Fprintf(w, "Day:\n")
+	for _, position := range p.Net {
+		fmt.Fprintf(w, "%v\n", position)
+	}
+	return w.String()
 }
 
 // ConvertPositionParams represents the input params for a position conversion.

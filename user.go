@@ -24,13 +24,6 @@ type UserSessionTokens struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-// Bank represents the details of a single bank account entry on a user's file.
-type Bank struct {
-	Name    string `json:"name"`
-	Branch  string `json:"branch"`
-	Account string `json:"account"`
-}
-
 // UserProfile represents a user's personal and financial profile.
 type UserProfile struct {
 	UserName      string   `json:"user_name"`
@@ -45,6 +38,12 @@ type UserProfile struct {
 	Exchanges     []string `json:"exchanges"`
 }
 
+func (p UserProfile) String() string {
+	return fmt.Sprintf(
+		"UserName: %v\nUserShortName: %v\nAvatarURL: %v\nUserType: %v\nEmail: %v\nPhone: %v\nBroker: %v\nProducts: %v\nOrderTypes: %v\nExchanges: %v\n",
+		p.UserName, p.UserShortName, p.AvatarURL, p.UserType, p.Email, p.Phone, p.Broker, p.Products, p.OrderTypes, p.Exchanges)
+}
+
 // Margins represents the user margins for a segment.
 type Margins struct {
 	Category  string           `json:"-"`
@@ -54,12 +53,26 @@ type Margins struct {
 	Used      UsedMargins      `json:"utilised"`
 }
 
+func (m Margins) String() string {
+	return fmt.Sprintf(
+		"Enabled:\t%v\nNet Margin:\t%v\nAvailable:\t%v\nUsed Margin:\t%v\n",
+		m.Enabled, m.Net, m.Available, m.Used,
+	)
+}
+
 // AvailableMargins represents the available margins from the margins response for a single segment.
 type AvailableMargins struct {
 	AdHocMargin   float64 `json:"adhoc_margin"`
 	Cash          float64 `json:"cash"`
 	Collateral    float64 `json:"collateral"`
 	IntradayPayin float64 `json:"intraday_payin"`
+}
+
+func (m AvailableMargins) String() string {
+	return fmt.Sprintf(
+		"Adhoc: %v, Cash: %v, Collateral: %v, IntradayPayin: %v",
+		m.AdHocMargin, m.Cash, m.Collateral, m.IntradayPayin,
+	)
 }
 
 // UsedMargins represents the used margins from the margins response for a single segment.
@@ -75,10 +88,21 @@ type UsedMargins struct {
 	Turnover      float64 `json:"turnover"`
 }
 
+func (m UsedMargins) String() string {
+	return fmt.Sprintf(
+		"debits: %v, exposure: %v, m2m_realised: %v, m2m_unrealised: %v, option_premium: %v, payout: %v, span: %v, holding_sales: %v, turnover: %v",
+		m.Debits, m.Exposure, m.M2MRealised, m.M2MUnrealised, m.OptionPremium, m.Payout, m.Span, m.HoldingSales, m.Turnover,
+	)
+}
+
 // AllMargins contains both equity and commodity margins.
 type AllMargins struct {
 	Equity    Margins `json:"equity"`
 	Commodity Margins `json:"commodity"`
+}
+
+func (m AllMargins) String() string {
+	return fmt.Sprintf("Equity:\n%v\nCommodity:\n%v", m.Equity, m.Commodity)
 }
 
 // GenerateSession gets a user session details in exchange or request token.
